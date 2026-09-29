@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jewelry Budget Planner - PocketSmart</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/dashboard" class="nav-brand">
+      <i class="fa-solid fa-wallet"></i> PocketSmart
+    </a>
+    <ul class="nav-links">
+      <li><a href="/dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+      <li><a href="/home-planner"><i class="fa-solid fa-house"></i> Home Budget</a></li>
+      <li><a href="/party-planner"><i class="fa-solid fa-champagne-glasses"></i> Party Budget</a></li>
+      <li><a href="/jewelry-planner" class="active"><i class="fa-solid fa-gem"></i> Jewelry Budget</a></li>
+      <li><a href="/logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero Header -->
+  <section class="hero-banner" style="padding: 2.2rem 1.5rem 2.4rem 1.5rem;">
+    <div class="container">
+      <h1 style="font-size: 2.3rem;">Jewelry Budget Planner</h1>
+      <p style="font-size: 1.05rem;">
+        Get AI-powered jewelry recommendations within your budget for any occasion
+      </p>
+    </div>
+  </section>
+
+  <!-- Planner Container -->
+  <main class="main-content">
+    <div class="container-narrow">
+      
+      <!-- Input Form Panel -->
+      <div class="form-panel">
+        <form id="jewelryPlannerForm" enctype="multipart/form-data">
+          
+          <!-- Section 1: Budget Details -->
+          <div class="form-subcard">
+            <div class="form-subcard-title">
+              <i class="fa-solid fa-dollar-sign"></i> Budget Details
+            </div>
+            <div class="form-group">
+              <label for="total_budget">Total Budget (₹)</label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-money-bill-wave"></i>
+                <input type="number" id="total_budget" name="total_budget" value="5000" min="100" step="100" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Occasion & Preferences -->
+          <div class="form-subcard">
+            <div class="form-subcard-title">
+              <i class="fa-solid fa-calendar-days"></i> Occasion & Preferences
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label for="occasion"><i class="fa-solid fa-ribbon"></i> Occasion</label>
+              <input type="text" id="occasion" name="occasion" value="Birthday" placeholder="e.g. Birthday, Wedding, Party, Daily Wear" required>
+            </div>
+            <div class="form-group">
+              <label for="preferences"><i class="fa-solid fa-heart" style="color: #ec4899;"></i> Style Preferences</label>
+              <textarea id="preferences" name="preferences" rows="3" placeholder="Describe your style preferences, materials, colors, etc."></textarea>
+            </div>
+          </div>
+
+          <!-- Section 3: Upload Outfit Image -->
+          <div class="form-subcard">
+            <div class="form-subcard-title">
+              <i class="fa-solid fa-shirt"></i> Upload Outfit Image
+            </div>
+            <div style="border: 2px dashed #cbd5e1; border-radius: 12px; padding: 1.5rem; text-align: center; background: #ffffff;">
+              <input type="file" id="imageInput" name="image" accept="image/*" style="display: none;">
+              
+              <div id="uploadPrompt" onclick="document.getElementById('imageInput').click();" style="cursor: pointer;">
+                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2.2rem; color: #2563eb; margin-bottom: 0.6rem;"></i>
+                <p style="font-weight: 600; color: #1e293b; margin-bottom: 0.3rem;">Click to upload your outfit image</p>
+                <p style="font-size: 0.82rem; color: #64748b;">Supports JPG, PNG, WEBP (Optional multimodal input)</p>
+              </div>
+
+              <div id="imagePreviewContainer" style="display: none; position: relative; margin-top: 1rem;">
+                <img id="imagePreview" src="#" alt="Outfit Preview" style="max-height: 260px; max-width: 100%; border-radius: 8px; border: 1px solid #cbd5e1;">
+                <div style="margin-top: 0.8rem;">
+                  <button type="button" id="removeImgBtn" class="btn-card-action" style="background: #dc2626; padding: 0.45rem 1.1rem; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+                    <i class="fa-solid fa-trash-can"></i> Remove Image
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" id="submitBtn" class="btn-primary-block">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Get Recommendations
+          </button>
+        </form>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingIndicator" style="display: none; text-align: center; padding: 2.5rem;">
+        <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2.4rem; color: #2563eb;"></i>
+        <p style="margin-top: 1rem; font-size: 1.05rem; font-weight: 600; color: #1e3a8a;">
+          Multimodal Gemini 1.5 Pro AI is analyzing your outfit and curating matching jewelry...
+        </p>
+      </div>
+
+      <!-- Results Display Section -->
+      <div id="resultsSection" class="results-section">
+        <h2 class="results-header-title">Your Personalized Jewelry Recommendations</h2>
+        
+        <!-- Budget Summary -->
+        <div class="budget-summary-banner">
+          <div><i class="fa-solid fa-chart-pie"></i> Budget Summary</div>
+          <div>Total Budget: <span id="resTotalBudget">₹5000.00</span></div>
+          <div>Remaining Budget: <span id="resRemainingBudget" class="badge-remaining">₹800.00</span></div>
+        </div>
+
+        <!-- Outfit Analysis Card -->
+        <div id="outfitAnalysisCard" style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.2rem 1.6rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);">
+          <div style="font-weight: 700; color: #1e3a8a; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-shirt"></i> Outfit Analysis
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; font-size: 0.92rem;">
+            <div><i class="fa-solid fa-palette" style="color: #64748b;"></i> <strong>Colors:</strong> <span id="outfitColors">blue, white</span></div>
+            <div><i class="fa-solid fa-tag" style="color: #64748b;"></i> <strong>Style:</strong> <span id="outfitStyle">casual</span></div>
+            <div><i class="fa-solid fa-user-tie" style="color: #64748b;"></i> <strong>Formality:</strong> <span id="outfitFormality">informal</span></div>
+          </div>
+        </div>
+
+        <!-- Jewelry Recommendations Container -->
+        <div class="category-result-card">
+          <div class="category-result-header">
+            <div><i class="fa-solid fa-gem"></i> Jewelry Recommendations</div>
+          </div>
+          <div id="jewelryItemsList"></div>
+        </div>
+
+        <!-- Styling Tips Card -->
+        <div id="stylingTipsCard" class="suggestions-card" style="display: none;">
+          <h4><i class="fa-regular fa-lightbulb"></i> Styling Tips</h4>
+          <ul id="stylingTipsList"></ul>
+        </div>
+
+        <div style="text-align: right; margin-top: 1.5rem;">
+          <button onclick="window.print()" class="btn-card-action" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.4rem;">
+            <i class="fa-solid fa-print"></i> Print / Save Plan
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2025 PocketSmart | Smart Budget Solutions</p>
+    </div>
+  </footer>
+
+  <script>
+    // Image Preview Handling
+    const imageInput = document.getElementById("imageInput");
+    const uploadPrompt = document.getElementById("uploadPrompt");
+    const previewContainer = document.getElementById("imagePreviewContainer");
+    const previewImg = document.getElementById("imagePreview");
+    const removeBtn = document.getElementById("removeImgBtn");
+
+    imageInput.addEventListener("change", function() {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImg.src = e.target.result;
+          uploadPrompt.style.display = "none";
+          previewContainer.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    removeBtn.addEventListener("click", function() {
+      imageInput.value = "";
+      previewImg.src = "#";
+      uploadPrompt.style.display = "block";
+      previewContainer.style.display = "none";
+    });
+
+    // Form Submission
+    document.getElementById("jewelryPlannerForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const submitBtn = document.getElementById("submitBtn");
+      const loading = document.getElementById("loadingIndicator");
+      const results = document.getElementById("resultsSection");
+      const itemsList = document.getElementById("jewelryItemsList");
+
+      submitBtn.disabled = true;
+      loading.style.display = "block";
+      results.style.display = "none";
+      itemsList.innerHTML = "";
+
+      const formData = new FormData();
+      formData.append("total_budget", document.getElementById("total_budget").value);
+      formData.append("occasion", document.getElementById("occasion").value.trim());
+      formData.append("preferences", document.getElementById("preferences").value.trim());
+      if (imageInput.files[0]) {
+        formData.append("image", imageInput.files[0]);
+      }
+
+      try {
+        const token = localStorage.getItem("access_token");
+        const headers = {};
+        if (token) {
+          headers["Authorization"] = "Bearer " + token;
+        }
+
+        const response = await fetch("/jewelry-budget", {
+          method: "POST",
+          headers: headers,
+          credentials: "include",
+          body: formData
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            alert("Session expired. Please sign in again.");
+            window.location.href = "/login";
+            return;
+          }
+          throw new Error("Failed to generate jewelry recommendations");
+        }
+
+        const data = await response.json();
+        renderJewelryResults(data);
+      } catch (err) {
+        alert("Error: " + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        loading.style.display = "none";
+      }
+    });
+
+    function renderJewelryResults(data) {
+      document.getElementById("resTotalBudget").innerText = "₹" + (data.total_budget || 0).toFixed(2);
+      document.getElementById("resRemainingBudget").innerText = "₹" + (data.remaining_budget || 0).toFixed(2);
+
+      // Outfit Analysis
+      if (data.outfit_analysis) {
+        const colors = Array.isArray(data.outfit_analysis.colors) ? data.outfit_analysis.colors.join(", ") : (data.outfit_analysis.colors || "neutral");
+        document.getElementById("outfitColors").innerText = colors;
+        document.getElementById("outfitStyle").innerText = data.outfit_analysis.style || "Contemporary";
+        document.getElementById("outfitFormality").innerText = data.outfit_analysis.formality || "Semi-formal";
+        document.getElementById("outfitAnalysisCard").style.display = "block";
+      }
+
+      // Jewelry items
+      const itemsList = document.getElementById("jewelryItemsList");
+      itemsList.innerHTML = "";
+
+      (data.jewelry_recommendations || []).forEach(item => {
+        let linksHtml = "";
+        if (item.shopping_links) {
+          for (const [p, url] of Object.entries(item.shopping_links)) {
+            linksHtml += `<a href="${url}" target="_blank" class="pill-link ${p}" style="margin-right: 0.3rem;"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${p.charAt(0).toUpperCase() + p.slice(1)}</a>`;
+          }
+        }
+
+        itemsList.innerHTML += `
+          <div style="padding: 1.2rem 1.6rem; border-bottom: 1px solid #f1f5f9;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.3rem;">
+              <h4 style="font-size: 1.1rem; font-weight: 700; color: #1e3a8a;">
+                <i class="fa-regular fa-circle-dot" style="color: #2563eb; font-size: 0.85rem;"></i> ${item.item_type || "Jewelry Item"}
+              </h4>
+              <span style="background: #2563eb; color: #ffffff; padding: 0.25rem 0.75rem; border-radius: 6px; font-weight: 700; font-size: 0.95rem;">
+                ₹${(item.estimated_price || 0).toFixed(2)}
+              </span>
+            </div>
+            <p style="font-size: 0.92rem; color: #334155; margin-bottom: 0.4rem;">
+              <strong>Description:</strong> ${item.description || ""}
+            </p>
+            <p style="font-size: 0.88rem; color: #64748b; margin-bottom: 0.6rem;">
+              <strong>Style:</strong> ${item.style || "Classic"}
+            </p>
+            ${linksHtml ? `
+              <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: #475569;">
+                <i class="fa-solid fa-cart-shopping"></i> <span>Shop For This:</span>
+                <div class="shopping-links-group">${linksHtml}</div>
+              </div>
+            ` : ""}
+          </div>
+        `;
+      });
+
+      // Styling tips
+      const tipsCard = document.getElementById("stylingTipsCard");
+      const tipsList = document.getElementById("stylingTipsList");
+      tipsList.innerHTML = "";
+      if (data.styling_tips && data.styling_tips.length > 0) {
+        data.styling_tips.forEach(t => {
+          const li = document.createElement("li");
+          li.innerText = t;
+          tipsList.appendChild(li);
+        });
+        tipsCard.style.display = "block";
+      } else {
+        tipsCard.style.display = "none";
+      }
+
+      document.getElementById("resultsSection").style.display = "block";
+      document.getElementById("resultsSection").scrollIntoView({ behavior: "smooth" });
+    }
+  </script>
+</body>
+</html>

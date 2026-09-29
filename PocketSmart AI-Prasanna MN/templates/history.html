@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recommendation History - PocketSmart</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/dashboard" class="nav-brand">
+      <i class="fa-solid fa-wallet"></i> PocketSmart
+    </a>
+    <ul class="nav-links">
+      <li><a href="/dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+      <li><a href="/home-planner"><i class="fa-solid fa-house"></i> Home Planner</a></li>
+      <li><a href="/party-planner"><i class="fa-solid fa-champagne-glasses"></i> Party Planner</a></li>
+      <li><a href="/jewelry-planner"><i class="fa-solid fa-gem"></i> Jewelry Planner</a></li>
+      <li><a href="/history" class="active"><i class="fa-solid fa-clock-rotate-left"></i> History</a></li>
+      <li><a href="/logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero Header -->
+  <section class="hero-banner" style="padding: 2.5rem 1.5rem;">
+    <div class="container">
+      <h1 style="font-size: 2.4rem;">Your Recommendation History</h1>
+      <p style="font-size: 1.1rem;">
+        View and manage all your previous budget plans and recommendations
+      </p>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      
+      <div style="display: flex; align-items: center; gap: 0.6rem; font-size: 1.4rem; font-weight: 700; color: #1e3a8a; margin-bottom: 1.5rem;">
+        <i class="fa-solid fa-clock-rotate-left"></i> Recent Recommendations
+      </div>
+
+      <div class="history-grid" id="historyGrid">
+        {% if history and history|length > 0 %}
+          {% for item in history %}
+            <div class="history-card {{ item.type }}">
+              <div class="history-card-header">
+                <span class="history-badge">
+                  {% if item.type == 'home' %}
+                    <i class="fa-solid fa-house"></i> Home Interior Budget
+                  {% elif item.type == 'party' %}
+                    <i class="fa-solid fa-champagne-glasses"></i> Party Planning Budget
+                  {% else %}
+                    <i class="fa-solid fa-gem"></i> Jewelry Budget
+                  {% endif %}
+                </span>
+                <span class="history-date">{{ item.timestamp }}</span>
+              </div>
+
+              <div class="history-budget-row">
+                <div>
+                  <div class="history-budget-item">Total Budget</div>
+                  <div class="history-budget-val">₹{{ "{:,.0f}".format(item.input_data.get('total_budget', 0)) }}</div>
+                </div>
+                <div style="text-align: right;">
+                  <div class="history-budget-item">Remaining</div>
+                  <div class="history-budget-val" style="color: #2563eb;">₹{{ "{:,.0f}".format(item.full_result.get('remaining_budget', 0)) }}</div>
+                </div>
+              </div>
+
+              <div class="history-details-text">
+                <p><strong>Parameters:</strong> {{ item.input }}</p>
+              </div>
+
+              <button onclick="openModal('{{ item.id }}')" class="btn-view-details">
+                <i class="fa-regular fa-eye"></i> View Full Details
+              </button>
+            </div>
+          {% endfor %}
+        {% else %}
+          <!-- Default Mock Cards matching documentation screenshot -->
+          
+          <!-- Sample Jewelry Card -->
+          <div class="history-card jewelry">
+            <div class="history-card-header">
+              <span class="history-badge"><i class="fa-solid fa-gem"></i> Jewelry Budget</span>
+              <span class="history-date">May 22, 2025, 12:06 PM</span>
+            </div>
+            <div class="history-budget-row">
+              <div>
+                <div class="history-budget-item">Total Budget</div>
+                <div class="history-budget-val">₹5,000</div>
+              </div>
+              <div style="text-align: right;">
+                <div class="history-budget-item">Remaining</div>
+                <div class="history-budget-val" style="color: #2563eb;">₹800</div>
+              </div>
+            </div>
+            <div class="history-details-text">
+              <p>Occasion: Birthday</p>
+              <p>With outfit image: Yes</p>
+            </div>
+            <button onclick="alert('Generate your first budget plan to unlock live interactive history details!')" class="btn-view-details">
+              <i class="fa-regular fa-eye"></i> View Full Details
+            </button>
+          </div>
+
+          <!-- Sample Party Card -->
+          <div class="history-card party">
+            <div class="history-card-header">
+              <span class="history-badge"><i class="fa-solid fa-champagne-glasses"></i> Party Planning Budget</span>
+              <span class="history-date">May 22, 2025, 12:05 PM</span>
+            </div>
+            <div class="history-budget-row">
+              <div>
+                <div class="history-budget-item">Total Budget</div>
+                <div class="history-budget-val">₹5,000</div>
+              </div>
+              <div style="text-align: right;">
+                <div class="history-budget-item">Remaining</div>
+                <div class="history-budget-val" style="color: #2563eb;">₹0</div>
+              </div>
+            </div>
+            <div class="history-details-text">
+              <p>Party Type: wedding</p>
+              <p>Guests: 3</p>
+              <p>Needs: Catering, Entertainment</p>
+            </div>
+            <button onclick="alert('Generate your first budget plan to unlock live interactive history details!')" class="btn-view-details">
+              <i class="fa-regular fa-eye"></i> View Full Details
+            </button>
+          </div>
+
+          <!-- Sample Home Card -->
+          <div class="history-card home">
+            <div class="history-card-header">
+              <span class="history-badge"><i class="fa-solid fa-house"></i> Home Interior Budget</span>
+              <span class="history-date">May 22, 2025, 12:02 PM</span>
+            </div>
+            <div class="history-budget-row">
+              <div>
+                <div class="history-budget-item">Total Budget</div>
+                <div class="history-budget-val">₹5,000</div>
+              </div>
+              <div style="text-align: right;">
+                <div class="history-budget-item">Remaining</div>
+                <div class="history-budget-val" style="color: #2563eb;">₹500</div>
+              </div>
+            </div>
+            <div class="history-details-text">
+              <p>Rooms: Living Room, Kitchen</p>
+              <p>Lights: 5 | Fans: 4 | Furniture: 2</p>
+            </div>
+            <button onclick="alert('Generate your first budget plan to unlock live interactive history details!')" class="btn-view-details">
+              <i class="fa-regular fa-eye"></i> View Full Details
+            </button>
+          </div>
+
+        {% endif %}
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Details Modal -->
+  <div id="detailsModal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+      <div id="modalBody">
+        <div style="text-align: center; padding: 2rem;">
+          <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: #2563eb;"></i>
+          <p style="margin-top: 0.8rem;">Loading recommendation details...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2025 PocketSmart. All rights reserved.BY LILY</p>
+    </div>
+  </footer>
+
+  <script>
+    async function openModal(recId) {
+      const modal = document.getElementById("detailsModal");
+      const body = document.getElementById("modalBody");
+      modal.style.display = "flex";
+      body.innerHTML = `
+        <div style="text-align: center; padding: 2rem;">
+          <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: #2563eb;"></i>
+          <p style="margin-top: 0.8rem;">Loading recommendation details...</p>
+        </div>
+      `;
+
+      try {
+        const response = await fetch(`/recommendation-details/${recId}`);
+        if (!response.ok) throw new Error("Could not load details");
+        const data = await response.json();
+        
+        const full = data.full_result || {};
+        let itemsHtml = "";
+
+        if (data.type === "jewelry") {
+          (full.jewelry_recommendations || []).forEach(it => {
+            let linksHtml = "";
+            if (it.shopping_links) {
+              for (const [p, u] of Object.entries(it.shopping_links)) {
+                linksHtml += `<a href="${u}" target="_blank" class="pill-link ${p}">${p}</a> `;
+              }
+            }
+            itemsHtml += `
+              <div style="padding: 0.8rem 0; border-bottom: 1px solid #e2e8f0;">
+                <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                  <span>${it.item_type || "Item"}</span>
+                  <span style="color: #2563eb;">₹${(it.estimated_price || 0).toFixed(2)}</span>
+                </div>
+                <p style="font-size: 0.88rem; color: #64748b; margin: 0.3rem 0;">${it.description || ""}</p>
+                <div class="shopping-links-group">${linksHtml}</div>
+              </div>
+            `;
+          });
+        } else {
+          (full.budget_breakdown || []).forEach(cat => {
+            itemsHtml += `<h4 style="margin-top: 1rem; color: #1e3a8a; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.3rem;">${cat.category} (₹${(cat.allocation || 0).toFixed(2)})</h4>`;
+            (cat.items || []).forEach(it => {
+              let linksHtml = "";
+              if (it.shopping_links) {
+                for (const [p, u] of Object.entries(it.shopping_links)) {
+                  linksHtml += `<a href="${u}" target="_blank" class="pill-link ${p}">${p}</a> `;
+                }
+              }
+              itemsHtml += `
+                <div style="padding: 0.6rem 0; border-bottom: 1px solid #f1f5f9;">
+                  <div style="display: flex; justify-content: space-between;">
+                    <strong>${it.name || "Item"}</strong>
+                    <span>₹${(it.estimated_price || 0).toFixed(2)} × ${it.quantity || 1}</span>
+                  </div>
+                  <p style="font-size: 0.85rem; color: #64748b; margin: 0.2rem 0;">${it.description || ""}</p>
+                  <div class="shopping-links-group">${linksHtml}</div>
+                </div>
+              `;
+            });
+          });
+        }
+
+        body.innerHTML = `
+          <h2 style="color: #112240; margin-bottom: 0.5rem; text-transform: capitalize;">${data.type} Budget Details</h2>
+          <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1.2rem;">Generated on: ${data.timestamp}</p>
+          
+          <div class="budget-summary-banner" style="margin-bottom: 1.2rem;">
+            <span>Total: ₹${(full.total_budget || 0).toFixed(2)}</span>
+            <span class="badge-remaining">Remaining: ₹${(full.remaining_budget || 0).toFixed(2)}</span>
+          </div>
+
+          <div>${itemsHtml}</div>
+        `;
+      } catch (err) {
+        body.innerHTML = `<p style="color: #dc2626;">Error loading details: ${err.message}</p>`;
+      }
+    }
+
+    function closeModal() {
+      document.getElementById("detailsModal").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById("detailsModal");
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Your Account - PocketSmart</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <i class="fa-solid fa-wallet"></i> PocketSmart
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/login" class="btn-nav-primary">Sign In</a></li>
+    </ul>
+  </nav>
+
+  <!-- Register Main -->
+  <main class="main-content auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1 class="auth-brand">PocketSmart</h1>
+        <p class="auth-subbrand">AI-Powered Budget Planning</p>
+        <h2 class="auth-title">Create Your Account</h2>
+      </div>
+
+      <div id="alert-box" style="display: none; padding: 0.75rem; border-radius: 8px; margin-bottom: 1.2rem; font-size: 0.9rem;"></div>
+
+      <form class="auth-form" id="registerForm">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="username" name="username" placeholder="Choose a username" required autofocus>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="password" name="password" placeholder="Create a strong password" required minlength="4">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm_password">Confirm Password</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-circle-check"></i>
+            <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required minlength="4">
+          </div>
+        </div>
+
+        <button type="submit" class="btn-card-action" style="padding: 0.85rem; font-size: 1rem; width: 100%; margin-top: 0.8rem;">
+          Create Account <i class="fa-solid fa-user-plus" style="margin-left: 0.3rem;"></i>
+        </button>
+      </form>
+
+      <p class="auth-footer-text">
+        Already have an account? <a href="/login">Sign In</a>
+      </p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>© 2025 PocketSmart. All rights reserved.BY LILY</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("registerForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const alertBox = document.getElementById("alert-box");
+      const username = document.getElementById("username").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const confirm_password = document.getElementById("confirm_password").value;
+
+      alertBox.style.display = "none";
+
+      if (password !== confirm_password) {
+        alertBox.style.display = "block";
+        alertBox.style.backgroundColor = "#fee2e2";
+        alertBox.style.color = "#991b1b";
+        alertBox.innerText = "Passwords do not match.";
+        return;
+      }
+
+      try {
+        const response = await fetch("/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, email, password, full_name: username })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          if (data.access_token) {
+            localStorage.setItem("access_token", data.access_token);
+            localStorage.setItem("username", data.username || username);
+          }
+          alertBox.style.display = "block";
+          alertBox.style.backgroundColor = "#dcfce7";
+          alertBox.style.color = "#166534";
+          alertBox.innerText = "Registration successful! Redirecting to dashboard...";
+          setTimeout(() => {
+            window.location.href = "/dashboard";
+          }, 400);
+        } else {
+          alertBox.style.display = "block";
+          alertBox.style.backgroundColor = "#fee2e2";
+          alertBox.style.color = "#991b1b";
+          alertBox.innerText = data.detail || "Registration failed";
+        }
+      } catch (err) {
+        alertBox.style.display = "block";
+        alertBox.style.backgroundColor = "#fee2e2";
+        alertBox.style.color = "#991b1b";
+        alertBox.innerText = "Error connecting to server.";
+      }
+    });
+  </script>
+</body>
+</html>

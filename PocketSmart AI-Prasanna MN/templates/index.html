@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PocketSmart - AI-Powered Budget Planning for Everyday Needs</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <i class="fa-solid fa-wallet"></i> PocketSmart
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#testimonials">Testimonials</a></li>
+      {% if user %}
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/logout">Logout</a></li>
+        <li><a href="/dashboard" class="btn-nav-primary"><i class="fa-solid fa-user"></i> {{ user.username }}</a></li>
+      {% else %}
+        <li><a href="/login">Sign In</a></li>
+        <li><a href="/register" class="btn-nav-primary">Get Started</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-banner">
+    <div class="container">
+      <h1>PocketSmart</h1>
+      <h2>AI-Powered Budget Planning for Everyday Needs</h2>
+      <p>
+        Make smarter financial decisions with personalized budget recommendations for home interiors,
+        parties, and jewelry purchases. Our AI helps you get the most value for your money.
+      </p>
+      <div class="hero-cta">
+        {% if user %}
+          <a href="/dashboard" class="btn-hero-dark">Go to Dashboard</a>
+        {% else %}
+          <a href="/register" class="btn-hero-dark">Get Started</a>
+          <a href="#features" class="btn-hero-light">Learn More</a>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <!-- Features / Planners Section -->
+  <main class="main-content" id="features">
+    <div class="container">
+      <div class="section-title-wrap">
+        <h2 class="section-title">Our Smart Budget Planners</h2>
+        <div class="section-title-underline"></div>
+        <p class="section-subtitle">
+          Discover how PocketSmart helps you make better financial decisions across different areas of your life
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <!-- Home Interior Planner Card -->
+        <div class="planner-card">
+          <div class="planner-card-header">
+            <i class="fa-solid fa-house"></i>
+          </div>
+          <div class="planner-card-body">
+            <h3>Home Interior Budget Planner</h3>
+            <p>
+              Get personalized recommendations for furniture, lighting, and decor that fit your style preferences and budget constraints. Our AI helps you create a beautiful space without overspending.
+            </p>
+            <a href="/home-planner" class="btn-card-action">Try Home Planner</a>
+          </div>
+        </div>
+
+        <!-- Party Planner Card -->
+        <div class="planner-card">
+          <div class="planner-card-header">
+            <i class="fa-solid fa-champagne-glasses"></i>
+          </div>
+          <div class="planner-card-body">
+            <h3>Party Budget Planner</h3>
+            <p>
+              Plan your perfect event with smart budget allocations for venue, catering, decorations, and entertainment. Our AI suggests the best ways to create memorable events while staying within your budget.
+            </p>
+            <a href="/party-planner" class="btn-card-action">Try Party Planner</a>
+          </div>
+        </div>
+
+        <!-- Jewelry Planner Card -->
+        <div class="planner-card">
+          <div class="planner-card-header">
+            <i class="fa-solid fa-gem"></i>
+          </div>
+          <div class="planner-card-body">
+            <h3>Jewelry Budget Planner</h3>
+            <p>
+              Find the ideal jewelry pieces for any occasion that match your outfit and budget. Our AI recommends options based on your style preferences, occasion, and available budget.
+            </p>
+            <a href="/jewelry-planner" class="btn-card-action">Try Jewelry Planner</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Testimonials Section -->
+    <section class="container" id="testimonials" style="margin-top: 5rem;">
+      <div class="section-title-wrap">
+        <h2 class="section-title">What Our Users Say</h2>
+        <div class="section-title-underline"></div>
+        <p class="section-subtitle">
+          Real experiences from people who have transformed their financial planning with PocketSmart
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <!-- Testimonial 1 -->
+        <div class="planner-card" style="padding: 1.8rem; border-top: 3px solid #2563eb;">
+          <p style="font-style: italic; color: #475569; margin-bottom: 1.5rem; line-height: 1.6;">
+            "PocketSmart helped me furnish my new apartment without breaking the bank. The recommendations were spot on and I saved nearly 30% of my original budget!"
+          </p>
+          <div style="display: flex; align-items: center; gap: 0.8rem; margin-top: auto;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #e0e7ff; color: #3730a3; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+              SK
+            </div>
+            <div>
+              <h4 style="font-size: 1rem; color: #1e293b;">Sarah K.</h4>
+              <span style="font-size: 0.82rem; color: #64748b;">Home Owner</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonial 2 -->
+        <div class="planner-card" style="padding: 1.8rem; border-top: 3px solid #f59e0b;">
+          <p style="font-style: italic; color: #475569; margin-bottom: 1.5rem; line-height: 1.6;">
+            "Planning my daughter's birthday party was so much easier with PocketSmart's budget breakdown. The AI suggestions for affordable decorations and catering options were fantastic."
+          </p>
+          <div style="display: flex; align-items: center; gap: 0.8rem; margin-top: auto;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #fef3c7; color: #92400e; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+              MR
+            </div>
+            <div>
+              <h4 style="font-size: 1rem; color: #1e293b;">Michael R.</h4>
+              <span style="font-size: 0.82rem; color: #64748b;">Parent</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonial 3 -->
+        <div class="planner-card" style="padding: 1.8rem; border-top: 3px solid #ec4899;">
+          <p style="font-style: italic; color: #475569; margin-bottom: 1.5rem; line-height: 1.6;">
+            "The jewelry recommendations perfectly matched my outfit for the wedding. Saved me hours of searching and I received so many compliments on my accessories!"
+          </p>
+          <div style="display: flex; align-items: center; gap: 0.8rem; margin-top: auto;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #fce7f3; color: #9d174d; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+              PM
+            </div>
+            <div>
+              <h4 style="font-size: 1rem; color: #1e293b;">Priya M.</h4>
+              <span style="font-size: 0.82rem; color: #64748b;">Fashion Enthusiast</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom CTA Callout -->
+    <section class="hero-banner" style="margin-top: 5rem; margin-bottom: 0;">
+      <div class="container">
+        <h2>Ready to Optimize Your Budget?</h2>
+        <p>
+          Join PocketSmart today and start making smarter financial decisions across all areas of your life.
+        </p>
+        <div class="hero-cta">
+          <a href="/login" class="btn-hero-light">Sign In</a>
+          <a href="/register" class="btn-hero-dark">Create Account</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2025 PocketSmart. All rights reserved.BY LILY</p>
+    </div>
+  </footer>
+
+</body>
+</html>

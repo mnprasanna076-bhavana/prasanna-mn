@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - PocketSmart</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="/dashboard" class="nav-brand">
+      <i class="fa-solid fa-wallet"></i> PocketSmart
+    </a>
+    <ul class="nav-links">
+      <li><a href="/home-planner"><i class="fa-solid fa-house"></i> Home Planner</a></li>
+      <li><a href="/party-planner"><i class="fa-solid fa-champagne-glasses"></i> Party Planner</a></li>
+      <li><a href="/jewelry-planner"><i class="fa-solid fa-gem"></i> Jewelry Planner</a></li>
+      <li><a href="/history"><i class="fa-solid fa-clock-rotate-left"></i> History</a></li>
+      <li><a href="/logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
+    </ul>
+  </nav>
+
+  <!-- Welcome Hero Banner -->
+  <section class="hero-banner" style="padding: 2.8rem 1.5rem 3rem 1.5rem;">
+    <div class="container">
+      <h1 style="font-size: 2.6rem;">Welcome, {{ user.username }}!</h1>
+      <p style="font-size: 1.15rem; max-width: 700px;">
+        Choose a budget planner to get started with your personalized financial planning experience
+      </p>
+    </div>
+  </section>
+
+  <!-- Dashboard Main Grid -->
+  <main class="main-content">
+    <div class="container">
+      <div class="grid-3" style="margin-top: 0;">
+        
+        <!-- Home Planner Card -->
+        <div class="planner-card">
+          <img src="/static/images/home_card.jpg" alt="Home Interior" class="planner-card-img" onerror="this.src='https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=600&q=80'">
+          <div class="planner-card-body">
+            <h3><i class="fa-solid fa-house" style="color: #2563eb;"></i> Home Budget Planner</h3>
+            <p>
+              Plan your interior design budget efficiently with AI-powered recommendations for furniture, lighting, and more.
+            </p>
+            <a href="/home-planner" class="btn-card-action">Get Started</a>
+          </div>
+        </div>
+
+        <!-- Party Planner Card -->
+        <div class="planner-card">
+          <img src="/static/images/party_card.jpg" alt="Party Planning" class="planner-card-img" onerror="this.src='https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=600&q=80'">
+          <div class="planner-card-body">
+            <h3><i class="fa-solid fa-champagne-glasses" style="color: #2563eb;"></i> Party Budget Planner</h3>
+            <p>
+              Plan your perfect event with budget allocations for venue, catering, decorations, and entertainment.
+            </p>
+            <a href="/party-planner" class="btn-card-action">Get Started</a>
+          </div>
+        </div>
+
+        <!-- Jewelry Planner Card -->
+        <div class="planner-card">
+          <img src="/static/images/jewelry_card.jpg" alt="Jewelry Planning" class="planner-card-img" onerror="this.src='https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=600&q=80'">
+          <div class="planner-card-body">
+            <h3><i class="fa-solid fa-gem" style="color: #2563eb;"></i> Jewelry Budget Planner</h3>
+            <p>
+              Find the ideal jewelry pieces for any occasion that match your outfit and stay within your budget.
+            </p>
+            <a href="/jewelry-planner" class="btn-card-action">Get Started</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center History Button -->
+      <div style="text-align: center; margin: 3rem 0 2.5rem 0;">
+        <a href="/history" style="display: inline-flex; align-items: center; gap: 0.6rem; background: #ea580c; color: #ffffff; padding: 0.8rem 2.2rem; border-radius: 9999px; font-weight: 700; text-decoration: none; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3); transition: all 0.2s;">
+          <i class="fa-solid fa-clock-rotate-left"></i> View All Recommendation History
+        </a>
+      </div>
+
+      <!-- Recent Activity Panel -->
+      <div style="max-width: 820px; margin: 0 auto; background: #ffffff; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06); border: 1px solid var(--border-color);">
+        <div style="background-color: #1a365d; color: #ffffff; padding: 1.1rem 1.8rem; font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 0.6rem;">
+          <i class="fa-solid fa-clock-rotate-left"></i> Recent Activity
+        </div>
+        <div style="padding: 1.2rem 1.8rem;">
+          {% if recent_activity and recent_activity|length > 0 %}
+            {% for act in recent_activity %}
+              <div style="display: flex; align-items: center; gap: 1.2rem; padding: 1rem 0; border-bottom: 1px solid #f1f5f9;">
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: #1a365d; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+                  {% if act.type == 'home' %}
+                    <i class="fa-solid fa-house"></i>
+                  {% elif act.type == 'party' %}
+                    <i class="fa-solid fa-champagne-glasses"></i>
+                  {% else %}
+                    <i class="fa-solid fa-gem"></i>
+                  {% endif %}
+                </div>
+                <div style="flex: 1;">
+                  <h4 style="font-size: 1.05rem; color: #1e3a8a; margin-bottom: 0.2rem;">
+                    {% if act.type == 'home' %}Home Budget Plan{% elif act.type == 'party' %}Party Budget Plan{% else %}Jewelry Budget Plan{% endif %}
+                  </h4>
+                  <p style="font-size: 0.88rem; color: #64748b;">
+                    {{ act.summary }} — <span style="color: #94a3b8;">{{ act.timestamp }}</span>
+                  </p>
+                </div>
+                <a href="/history" style="color: #2563eb; text-decoration: none; font-size: 0.9rem; font-weight: 600;">View →</a>
+              </div>
+            {% endfor %}
+          {% else %}
+            <!-- Default placeholder activity matching document screenshot -->
+            <div style="display: flex; align-items: center; gap: 1.2rem; padding: 1rem 0; border-bottom: 1px solid #f1f5f9;">
+              <div style="width: 44px; height: 44px; border-radius: 50%; background: #1a365d; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+                <i class="fa-solid fa-house"></i>
+              </div>
+              <div style="flex: 1;">
+                <h4 style="font-size: 1.05rem; color: #1e3a8a; margin-bottom: 0.2rem;">Home Budget Plan</h4>
+                <p style="font-size: 0.88rem; color: #64748b;">
+                  Budget: ₹5,000 - Tailored for Living Room & Kitchen
+                </p>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 1.2rem; padding: 1rem 0; border-bottom: 1px solid #f1f5f9;">
+              <div style="width: 44px; height: 44px; border-radius: 50%; background: #1a365d; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+                <i class="fa-solid fa-champagne-glasses"></i>
+              </div>
+              <div style="flex: 1;">
+                <h4 style="font-size: 1.05rem; color: #1e3a8a; margin-bottom: 0.2rem;">Birthday Party Budget Plan</h4>
+                <p style="font-size: 0.88rem; color: #64748b;">
+                  Budget: ₹1,200 for 30 guests - Catering & Entertainment
+                </p>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 1.2rem; padding: 1rem 0;">
+              <div style="width: 44px; height: 44px; border-radius: 50%; background: #1a365d; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+                <i class="fa-solid fa-gem"></i>
+              </div>
+              <div style="flex: 1;">
+                <h4 style="font-size: 1.05rem; color: #1e3a8a; margin-bottom: 0.2rem;">Jewelry Budget Plan</h4>
+                <p style="font-size: 0.88rem; color: #64748b;">
+                  Budget: ₹800 for Anniversary - Matched with Outfit
+                </p>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2025 PocketSmart. All rights reserved.BY LILY</p>
+    </div>
+  </footer>
+
+</body>
+</html>
